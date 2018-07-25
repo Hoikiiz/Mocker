@@ -11,7 +11,7 @@ anyway...
 
 `pip install Django`
 
-`pip install pip install djangorestframework`
+`pip install djangorestframework`
 
 `pip install markdown`       
 
