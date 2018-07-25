@@ -289,7 +289,7 @@ def do_mock(mock_url, parameters):
             for slot in mock_slots:
                 if hit_slot(slot, parameters):
                     print('Go to Mock')
-                    return 0, tools.json_loads_byteified(slot.value)
+                    return 0, json.loads(slot.value)
             if len(item.finalTarget) > 0:
                 print('Go to Final Target')
                 return 1, item.finalTarget
@@ -310,7 +310,7 @@ def hit_slot(slot, parameters):
     if not slot.active:
         return False
     mock_conditions = MockCondition.objects.filter(mockSlot=slot)
-    if slot.compMethod:
+    if not slot.compMethod:
         for condition in mock_conditions:
             if not hit_condition(condition, parameters):
                 return False
@@ -329,8 +329,9 @@ def hit_condition(condition, parameters):
     key_parts = condition_key.split('.')
     for i in range(0, len(key_parts)):
         current_key = key_parts[i]
-        if current_key in temp_obj.keys():
-            temp_obj = temp_obj[current_key]
+        value = temp_obj.get(current_key)
+        if value:
+            temp_obj = value
             if i is len(key_parts) - 1:
                 return handle_value(condition, temp_obj, condition_value)
             if not isinstance(temp_obj, dict):

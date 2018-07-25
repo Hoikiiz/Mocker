@@ -116,20 +116,20 @@ def mocker(request, mock_url):
         content_type = request.META['CONTENT_TYPE']
         print(content_type)
         if content_type == 'application/json':
-            request_post = tools.json_loads_byteified(request.body)
+            request_post = json.loads(request.body)
         elif content_type == 'application/x-www-form-urlencoded':
-            request_post = tools.json_loads_byteified(json.dumps(request.POST))
+            print(json.dumps(request.POST))
+            request_post = json.loads(json.dumps(request.POST))
         else:
             return JsonResponse(response_404())
 
         print('Request Body:')
         print(request_post)
-
         # Handle GET parameters
-        # if request.GET:
-        #     for o in request.GET.items():
-        #         print(o)
-        #     request_post = dict(request_post.items() + request.GET.items())
+        if len(request.GET):
+            for o in request.GET.items():
+                print(o)
+            request_post = dict(request_post.items() + request.GET.items())
 
         # White List
         if 'func' in request_post.keys():
@@ -151,7 +151,7 @@ def mocker(request, mock_url):
         elif status == 1:
             r = requests.post(result+'/'+mock_url, data=request_post)
             print('*****************')
-            print(r.text)
+            print('On Redirect')
             controllers.save_mock_log(mock_url, 'Redirect', 'POST', request_post, r.text, date_begin, tools.get_current_time())
             # json_result = tools.json_loads_byteified(r.text)
             json_result = json.loads(r.text)
